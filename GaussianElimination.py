@@ -9,13 +9,16 @@ def swap_cols(A: np.ndarray, i1: int, i2: int):
     A[:, [i1, i2]] = A[:, [i2, i1]]
 
 
-
 class GaussianEliminationAlgo:
-    def __init__(self, A: np.ndarray, b: np.ndarray):
+    def __init__(self, A: np.ndarray, b: np.ndarray, copy_input=False):
         assert A.shape[0] == A.shape[1], "A has to be square matrix"
         assert A.shape[0] == b.shape[0], "b and A shapes doesnt match"
-        self.A = A
-        self.b = b
+        if copy_input:
+            self.A = A.copy()
+            self.b = b.copy()
+        else:
+            self.A = A
+            self.b = b
 
     def run(self):
         A, b = self._forward_elimination(self.A, self.b)
@@ -104,12 +107,3 @@ class GaussianEliminationMainElementAlgo(GaussianEliminationAlgo):
         for i in range(len(x_permutated)):
             x[i] = x_permutated[col_indices[i]]
         return x
-
-
-A = np.array([[2]], dtype=np.float64)
-b = np.array([5], dtype=np.float64)
-gauss_elem = GaussianEliminationMainElementAlgo(A, b)
-# gauss_elem._forward_elimination(A, b)
-# gauss_elem._backward_elimination(gauss_elem._forward_elimination(A, b))
-# gauss_elem._forward_elimination(A, b)
-print(gauss_elem.run())
