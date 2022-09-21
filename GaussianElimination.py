@@ -75,7 +75,7 @@ class GaussianEliminationMainElementAlgo(GaussianEliminationAlgo):
         # maps indices of old var to new
         col_indices = [i for i in range(n)]
         for col_ind in range(n):
-            A_cur = A[col_ind:, col_ind:]
+            A_cur = np.abs(A[col_ind:, col_ind:])
             main_row_ind, main_col_ind = np.unravel_index(A_cur.argmax(), A_cur.shape)
             # adjust indices so they are fit to orig matrix A
             main_row_ind += col_ind
@@ -89,6 +89,7 @@ class GaussianEliminationMainElementAlgo(GaussianEliminationAlgo):
                 swap_cols(A, col_ind, main_col_ind)
                 col_indices[col_ind], col_indices[main_col_ind] = col_indices[main_col_ind], col_indices[col_ind]
             # now matrix starts with main row and col
+
             for row_ind in range(col_ind, n):
                 if row_ind == col_ind:
                     continue
@@ -96,8 +97,6 @@ class GaussianEliminationMainElementAlgo(GaussianEliminationAlgo):
                 A[row_ind] += multiplier * A[col_ind]
                 b[row_ind] += multiplier * b[col_ind]
 
-            print(np.c_[A, b])
-            print(col_indices)
         return A, b, col_indices
 
     def run(self):
@@ -105,5 +104,5 @@ class GaussianEliminationMainElementAlgo(GaussianEliminationAlgo):
         x_permutated = self._backward_elimination(A, b)
         x = np.zeros_like(x_permutated)
         for i in range(len(x_permutated)):
-            x[i] = x_permutated[col_indices[i]]
+            x[col_indices[i]] = x_permutated[i]
         return x
