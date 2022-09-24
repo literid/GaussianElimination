@@ -22,40 +22,63 @@ def compute_error(algo_type: GaussianEliminationAlgo, A: np.ndarray, b: np.ndarr
     return residual, error
 
 
+def test_print(print_all=True):
+    # print_all: if false prints max error only
+    def decorator(test_case):
+        def wrapper(*args, **kwargs):
+            residual, error = test_case(*args, **kwargs)
+            if print_all:
+                print(f"Невязка = {residual}, ошибка = {error}")
+            else:
+                if error:
+                    print(f"Невязка = {residual.max()}, ошибка = {error.max()}")
+                else:
+                    print(f"Невязка = {residual.max()}, ошибка = {error}")
+
+        return wrapper
+
+    return decorator
+
+
+@test_print()
 def test_case1(algo_type: GaussianEliminationAlgo = GaussianEliminationAlgo):
     A = np.array([[2]], dtype=np.float64)
     b = np.array([5], dtype=np.float64)
     real_solution = 5 / 2
     residual, error = compute_error(algo_type, A, b, real_solution)
-    print(f"Невязка = {residual}, ошибка = {error}")
+    return residual, error
 
 
+@test_print()
 def test_case2(algo_type: GaussianEliminationAlgo = GaussianEliminationAlgo):
     A = np.array([[2, 5], [-6, 10]], dtype=np.float64)
     b = np.array([5, 8], dtype=np.float64)
     real_solution = [1 / 5, 23 / 25]
     residual, error = compute_error(algo_type, A, b, real_solution)
-    print(f"Невязка = {residual}, ошибка = {error}")
+    return residual, error
 
 
+@test_print()
 def test_case3(algo_type: GaussianEliminationAlgo = GaussianEliminationAlgo):
     A = np.array([[4, 5, 43], [-6, 10, -243], [26, 56, 91]], dtype=np.float64)
     b = np.array([5, 8, 9], dtype=np.float64)
     real_solution = [10487 / 512, -14233 / 1792, -1551 / 1792]
     residual, error = compute_error(algo_type, A, b, real_solution)
-    print(f"Невязка = {residual}, ошибка = {error}")
+    return residual, error
 
 
-def test_case(algo_type: GaussianEliminationAlgo = GaussianEliminationAlgo, n=5):
+@test_print(print_all=False)
+def test_case4(algo_type: GaussianEliminationAlgo = GaussianEliminationAlgo, n=5):
     np.random.seed(986)
     A = np.random.random(size=(n, n))
     b = np.random.random(size=n)
     real_solution = None
     residual, error = compute_error(algo_type, A, b, real_solution)
-    print(f"Невязка = {np.abs(residual).max()}, ошибка = {error}")
+    return residual, error
+
 
 if __name__ == '__main__':
-    print("Тест для методы Гаусса с главным элементом")
-    test_case(GaussianEliminationMainElementAlgo, n = 1000)
+    print("Тест для метода Гаусса с главным элементом")
+    test_case4(GaussianEliminationMainElementAlgo, n=1000)
     print("Тест для метода обычного Гаусса")
-    test_case(GaussianEliminationAlgo, n = 1000)
+    test_case4(GaussianEliminationAlgo, n=1000)
